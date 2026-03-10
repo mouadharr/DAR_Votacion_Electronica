@@ -1,0 +1,18 @@
+; Protocolo de Votacion Segura (V-MA) - Autores: Mouad y Amjad
+; Caso de Uso 14: Votacion electronica
+
+mensaje = (peticion / respuesta) CRLF
+
+; Cliente
+
+peticion = comando [SP datos]
+comando = "REG_VOT" / "VER_OPC" / "ENV_OPC" / "VER_RES" / "FIN"
+datos = DNI / opcion
+DNI = 8DIGIT ALPHA
+opcion = 1*VCHAR
+
+; Servidor
+
+respuesta = codigo SP texto
+codigo = 3DIGIT
+texto = 1*(VCHAR / SP)
