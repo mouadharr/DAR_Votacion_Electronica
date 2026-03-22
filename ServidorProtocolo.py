@@ -1,33 +1,47 @@
 import socket
-IP = '0.0.0.0'
-PUERTO = 5000
-listavotantes = []
+import threading
 
-def empezar():
-    # Abrimos el enchufe de red
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as enchufe:
-        enchufe.bind((IP, PUERTO))
-        enchufe.listen()
-        print("Servidor en marcha")
+votos = {"OPCION1": 0, "OPCION2": 0}
+censados = set()
+abierto = True
+cerrojo = threading.Lock()
 
-        while True:
-            # Aceptamos al que llega atravesando el canal
-            canal, cliente = enchufe.accept()
-            with canal:
-                # Leemos el texto que nos da
-                texto = canal.recv(1024).decode('utf-8')
-                if not texto: continue
-                datos = texto.strip().split(' ')
-                orden = datos[0]
-                dni = datos[1] if len(datos) > 1 else ""
-                
-                if orden == "REG_VOT":
-                    if dni in listavotantes:
-                        canal.sendall(b"601 DENEGADO\r\n")
-                        print("DNI repetido")
+def gestionar_cliente(conn, addr):
+    global abierto
+    try:
+        data = conn.recv(1024).decode('utf-8').strip()
+        if not data: return
+        
+        partes = data.split(' ')
+        comando = partes[0]
+
+        with cerrojo:
+            if comando == "VOTAR":
+                if not abierto:
+                    conn.sendall(b"403 ERROR_CERRADO\r\n")
+                else:
+                    dni, opcion = partes[1], partes[2]
+                    if dni in censados:
+                        conn.sendall(b"601 YA_VOTADO\r\n")
                     else:
-                        listavotantes.append(dni)
-                        canal.sendall(b"100 AUTORIZADO\r\n")
-                        print("Voto guardado")
+                        censados.add(dni)
+                        votos[opcion] += 1
+                        conn.sendall(b"200 OK\r\n")
+            
+            elif comando == "CERRAR":
+                abierto = False
+                conn.sendall(b"201 Votacion finalizada\r\n")
+    finally:
+        conn.close()
 
-empezar()
+def iniciar():
+    soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    soc.bind(('0.0.0.0', 5000))
+    soc.listen(5)
+    print("Servidor activo puerto 5000")
+    
+    while True:
+        c, a = soc.accept()
+        threading.Thread(target=gestionar_cliente, args=(c, a)).start()
+
+iniciar()
