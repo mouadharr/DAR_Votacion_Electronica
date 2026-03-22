@@ -1,34 +1,25 @@
 import socket
 
-def mandar():
-    host = input("¿A qué IP nos conectamos? ")
-    print("¿Qué quieres hacer?\n1. Votar\n2. Ver cómo va el recuento\n3. Terminar la votación")
-    op = input("Elige una opción: ")
+def enviar_voto():
+    destino_ip = '192.168.1.XX' 
+    puerto = 5000
+
+    print("SISTEMA DE VOTOS")
+    id_usuario = input("DNI: ")
+    opcion = input("Voto (OPCION1/OPCION2): ")
+
+    msg = f"VOTAR {id_usuario} {opcion}\r\n"
 
     try:
-        f = socket.AF_INET
-        t = socket.SOCK_STREAM
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((destino_ip, puerto))
+        s.sendall(msg.encode('utf-8'))
         
-        with socket.socket(f, t) as s:
-            s.connect((host, 5000))
-            
-            if op == "1":
-                dni = input("DNI: ")
-                voto = input("¿A quién votas? (OPCION1 o OPCION2): ")
-                msg = "VOTAR " + dni + " " + voto + "\r\n"
-            elif op == "2":
-                msg = "RESULTADOS\r\n"
-            elif op == "3":
-                msg = "CERRAR\r\n"
-            else:
-                print("Esa opción no existe.")
-                return
+        respuesta = s.recv(1024).decode('utf-8')
+        print(f"Resultado: {respuesta}")
+        s.close()
+    except Exception as e:
+        print(f"Error: {e}")
 
-            s.sendall(msg.encode())
-            data = s.recv(1024).decode()
-            print("El servidor responde:", data)
-            
-    except:
-        print(" No se ha podido conectar con el servidor.")
-
-mandar()
+if __name__ == "__main__":
+    enviar_voto()
