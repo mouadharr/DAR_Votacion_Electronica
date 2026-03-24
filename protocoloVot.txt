@@ -1,4 +1,4 @@
-; Protocolo de Votacion Segura (V-MA)
+; Protocolo de Votacion Segura (V-MA) - Amjad y Mouad
 ; Caso de Uso 14: Votacion electronica
 
 mensaje = (peticion / respuesta) CRLF
