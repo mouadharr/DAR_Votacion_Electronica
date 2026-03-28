@@ -1,25 +1,40 @@
 import socket
 
-def enviar_voto():
-    destino_ip = '192.168.1.XX' 
-    puerto = 5000
+def menu():
+    print("\n1. ANDREA_MARTOS\n2. JAVIER_GARCIA\n3. PEDRO_GOMEZ\n4. CERRAR URNA")
+    return input("Opción: ")
 
-    print("SISTEMA DE VOTOS")
-    id_usuario = input("DNI: ")
-    opcion = input("Voto (OPCION1/OPCION2): ")
-
-    msg = f"VOTAR {id_usuario} {opcion}\r\n"
-
+def enviar(msg):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((destino_ip, puerto))
-        s.sendall(msg.encode('utf-8'))
-        
-        respuesta = s.recv(1024).decode('utf-8')
-        print(f"Resultado: {respuesta}")
+        s.connect(('192.168.1.39', 5000))
+        s.sendall(f"{msg}\r\n".encode('utf-8'))
+        resp = s.recv(1024).decode('utf-8')
         s.close()
+        return resp
     except Exception as e:
-        print(f"Error: {e}")
+        return str(e)
+
+def main():
+    while True:
+        opc = menu()
+        if opc in ['1', '2', '3']:
+            dni = input("DNI: ")
+            cands = {'1':"ANDREA_MARTOS", '2':"JAVIER_GARCIA", '3':"PEDRO_GOMEZ"}
+            res = enviar(f"VOTAR {dni} {cands[opc]}")
+            
+            if "200 OK" in res:
+                print("Voto registrado correctamente.")
+                break
+            elif "601" in res:
+                print("Error: Este DNI ya ha votado.")
+            else:
+                print(f"Error: {res}")
+                break
+                
+        elif opc == '4':
+            print(f"Resultado: {enviar('CERRAR')}")
+            break
 
 if __name__ == "__main__":
-    enviar_voto()
+    main()
