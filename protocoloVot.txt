@@ -1,18 +1,21 @@
-; Protocolo de Votacion Segura (V-MA) - Amjad y Mouad
-; Caso de Uso 14: Votacion electronica
+protocolo-votacion = 1*(mensaje-cliente / mensaje-servidor)
 
-mensaje = (peticion / respuesta) CRLF
+mensaje-cliente = comando-votar / comando-cerrar
+comando-votar   = "VOTAR" SP dni SP opcion CRLF
+comando-cerrar  = "CERRAR" CRLF
 
-; Cliente
+mensaje-servidor = respuesta-ok / respuesta-error / respuesta-final
+respuesta-ok    = "200" SP "OK" CRLF
+respuesta-error = cod-error SP motivo CRLF
+respuesta-final = "201" SP "Ganador:" SP candidato SP "Recuento final:" SP recuento CRLF
 
-peticion = comando [SP datos]
-comando = "REG_VOT" / "VER_OPC" / "ENV_OPC" / "VER_RES" / "FIN"
-datos = DNI / opcion
-DNI = 8DIGIT ALPHA
-opcion = 1*VCHAR
+dni             = 8DIGIT %x41-5A
+opcion          = "ANDREA_MARTOS" / "JAVIER_GARCIA" / "PEDRO_GOMEZ"
+candidato       = opcion
+cod-error       = "601" / "403" / "404"
+motivo          = "YA_VOTADO" / "ERROR_CERRADO" / "OPCION_INVALIDA"
+recuento        = "{" 1*(candidato ":" 1*DIGIT [", "]) "}"
 
-; Servidor
-
-respuesta = codigo SP texto
-codigo = 3DIGIT
-texto = 1*(VCHAR / SP)
+DIGIT           = %x30-39
+SP              = %x20
+CRLF            = %x0D %x0A
