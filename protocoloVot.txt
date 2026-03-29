@@ -1,13 +1,16 @@
 mensaje_red = mensaje_cliente / mensaje_servidor
+
 mensaje_cliente = cmd_votar / cmd_cerrar
-mensaje_servidor = resp_voto / resp_final / error_protocolo
 
 cmd_votar = "votar" SP id_usuario SP opcion_cand CRLF
 cmd_cerrar = "cerrar" CRLF
 
+mensaje_servidor = resp_voto / resp_final / error_protocolo
+
 resp_voto = ("voto_registrado" / "ya_has_votado" / "dni_incorrecto" / "ese_nombre_no_vale" / "lo_siento_la_urna_esta_cerrada" / "faltan_datos_en_el_mensaje") CRLF
 
-resp_final = "urna_cerrada_ganador_" opcion_cand "_votos_" lista_recuento CRLF
+resp_final = "urna_cerrada_ganador_" SP opcion_cand SP "_votos_" SP lista_recuento CRLF
+
 lista_recuento = elemento_voto *("," elemento_voto)
 elemento_voto = opcion_cand ":" contador
 
