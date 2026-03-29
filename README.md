@@ -50,7 +50,7 @@ Cliente: Iniciar en la máquina emisora :
 python3 cliente.py
 
 4. Validación en Red
-5. 
+
 La comunicación la hemos validado mediante capturas de tráfico real entre dos máquinas virtuales distintas ejecutadas desde el mismo equipo . El archivo de captura se encuentra en la carpeta /docs/captura.pcap.
 
 En wireshark hemos analizado : 
