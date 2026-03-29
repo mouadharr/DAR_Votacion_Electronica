@@ -3,6 +3,7 @@ PROTOCOLO DE VOTACIÓN ELECTRÓNICA
 Autores:
 
 -Mouad Harrouch Boukhalfa
+
 -Amjad A Habeeb Mahhi
 
 En este repositorio tenemos la implementación de un servidor cliente-servidor con  el objetivo de gestionar procesos de votación electrónica . Este sistema garantiza que cada votante pueda votar una única vez y permite el cierre formal con resultados detallados .
