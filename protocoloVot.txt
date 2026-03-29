@@ -1,21 +1,23 @@
-protocolo-votacion = 1*(mensaje-cliente / mensaje-servidor)
+mensaje_red = mensaje_cliente / mensaje_servidor
+mensaje_cliente = cmd_votar / cmd_cerrar
+mensaje_servidor = resp_voto / resp_final / error_protocolo
 
-mensaje-cliente = comando-votar / comando-cerrar
-comando-votar   = "VOTAR" SP dni SP opcion CRLF
-comando-cerrar  = "CERRAR" CRLF
+cmd_votar = "votar" SP id_usuario SP opcion_cand CRLF
+cmd_cerrar = "cerrar" CRLF
 
-mensaje-servidor = respuesta-ok / respuesta-error / respuesta-final
-respuesta-ok    = "200" SP "OK" CRLF
-respuesta-error = cod-error SP motivo CRLF
-respuesta-final = "201" SP "Ganador:" SP candidato SP "Recuento final:" SP recuento CRLF
+resp_voto = "voto_registrado" / "ya_has_votado" / "dni_incorrecto" / "ese_nombre_no_vale" / "lo_siento_la_urna_esta_cerrada" / "faltan_datos_en_el_mensaje" CRLF
 
-dni             = 8DIGIT %x41-5A
-opcion          = "ANDREA_MARTOS" / "JAVIER_GARCIA" / "PEDRO_GOMEZ"
-candidato       = opcion
-cod-error       = "601" / "403" / "404"
-motivo          = "YA_VOTADO" / "ERROR_CERRADO" / "OPCION_INVALIDA"
-recuento        = "{" 1*(candidato ":" 1*DIGIT [", "]) "}"
+resp_final = "urna_cerrada_ganador_" opcion_cand "_votos_" lista_recuento CRLF
+lista_recuento = elemento_voto *("," elemento_voto)
+elemento_voto = opcion_cand ":" contador
 
-DIGIT           = %x30-39
-SP              = %x20
-CRLF            = %x0D %x0A
+error_protocolo = "comando_desconocido" CRLF
+
+id_usuario = 5*12(DIGIT / ALPHA)
+opcion_cand = "andrea_martos" / "javier_garcia" / "pedro_gomez"
+contador = 1*DIGIT
+
+ALPHA = %x61-7A
+DIGIT = %x30-39
+SP = %x20
+CRLF = %x0D.0A
