@@ -1,6 +1,7 @@
 PROTOCOLO DE VOTACIÓN ELECTRÓNICA 
 
 Autores:
+
 -Mouad Harrouch Boukhalfa
 -Amjad A Habeeb Mahhi
 
@@ -29,7 +30,9 @@ solicitudes a la vez.
 -Exclusión mutua: Hemos implementado bloqueos (Lock) para que solo un hilo pueda modificar el recuento de votos a la vez. Esto evita que si dos cliente votan a la vez sus actualizaciones choquen .
 
 3. Guía de Ejecución
+   
 Configuración
+
 En el archivo cliente.py, se debe cambiar la dirección IP del servidor. En nuestro caso las direcciones IP son :
 
 -IP Servidor: 192.168.1.39
@@ -46,8 +49,10 @@ Cliente: Iniciar en la máquina emisora :
 
 python3 cliente.py
 
-4. Validación en Red 
+4. Validación en Red
+5. 
 La comunicación la hemos validado mediante capturas de tráfico real entre dos máquinas virtuales distintas ejecutadas desde el mismo equipo . El archivo de captura se encuentra en la carpeta /docs/captura.pcap.
+
 En wireshark hemos analizado : 
 
 - Handshake TCP: Se observa el establecimiento de la conexión  entre la IP .38 y la IP .39.
