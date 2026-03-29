@@ -1,7 +1,7 @@
 import socket
 import time
 
-ip_del_servidor = '127.0.0.1' 
+ip_del_servidor = '192.168.1.39' 
 
 def intentar_conectar():
     intentos = 0
