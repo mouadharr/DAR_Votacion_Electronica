@@ -1,26 +1,44 @@
-mensaje_red = mensaje_cliente / mensaje_servidor
+; Sintaxis
 
-mensaje_cliente = cmd_votar / cmd_cerrar
+SP      = %x20
+LF      = %x0A
+DIGIT   = %x30-39
+letra   = %x41-5A / %x61-7A
 
-cmd_votar = "votar" SP id_usuario SP opcion_cand CRLF
-cmd_cerrar = "cerrar" CRLF
+; Reglas principales 
 
-mensaje_servidor = resp_voto / resp_final / error_protocolo
+mensaje_red    = mensaje_cliente / mensaje_servidor
 
-resp_voto = ("voto_registrado" / "ya_has_votado" / "dni_incorrecto" / "ese_nombre_no_vale" / "lo_siento_la_urna_esta_cerrada" / "faltan_datos_en_el_mensaje") CRLF
+identificador  = 8DIGIT letra
+candidato_id   = "andrea_martos" / "javier_garcia" / "pedro_gomez"
 
-resp_final = "urna_cerrada_ganador_" SP opcion_cand SP "_votos_" SP lista_recuento CRLF
+recuento_total = item_recuento { "," item_recuento }
+item_recuento  = candidato_id ":" 1*DIGIT
 
-lista_recuento = elemento_voto *("," elemento_voto)
-elemento_voto = opcion_cand ":" contador
+lista_ganadores = candidato_id { "&" candidato_id }
 
-error_protocolo = "comando_desconocido" CRLF
+; Ordenes del cliente
 
-id_usuario = 5*12(DIGIT / ALPHA)
-opcion_cand = "andrea_martos" / "javier_garcia" / "pedro_gomez"
-contador = 1*DIGIT
+mensaje_cliente = orden_votar / orden_cerrar
 
-ALPHA = %x61-7A
-DIGIT = %x30-39
-SP = %x20
-CRLF = %x0D.0A
+orden_votar     = "VOTAR" SP identificador SP candidato_id LF
+orden_cerrar    = "CERRAR" LF
+
+; Respuestas del servidor
+
+mensaje_servidor = respuesta_voto / respuesta_cerrar / error_generico
+
+respuesta_voto   = ( "voto_confirmado" / 
+                     "dni_ya_registrado" / 
+                     "dni_invalido" / 
+                     "candidato_inexistente" / 
+                     "urna_cerrada" ) LF
+
+respuesta_cerrar = exito_cierre / exito_vacio / exito_empate / 
+                   "urna_ya_cerrada_previamente" LF
+
+exito_cierre     = "exito_cierre" "|" candidato_id "|" recuento_total LF
+exito_vacio      = "exito_cierre_vacio" "|" recuento_total LF
+exito_empate     = "exito_empate" "|" lista_ganadores "|" recuento_total LF
+
+error_generico   = "comando_invalido" LF
