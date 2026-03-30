@@ -2,81 +2,90 @@ import socket
 import threading
 
 opciones_voto = {"andrea_martos": 0, "javier_garcia": 0, "pedro_gomez": 0}
-dni_registrados = set()
-urna_activa = True
-bloqueo = threading.Lock()
+censo_votantes = set()
+urna_abierta = True
+cerrojo = threading.Lock()
+hilos_vivos = []
 
-def validar_y_contar(dni, candidato):
-    if " " in dni or len(dni) < 5:
-        return "dni_incorrecto"
+def registrar_voto_en_censo(identificador, candidato):
+    if len(identificador) != 9 or not identificador[:8].isdigit() or not identificador[-1].isalpha():
+        return "dni_invalido"
     
-    nom = candidato.lower()
-    if nom not in opciones_voto:
-        return "ese_nombre_no_vale"
+    opcion = candidato.lower()
+    if opcion not in opciones_voto:
+        return "candidato_inexistente"
     
-    if dni in dni_registrados:
-        return "ya_has_votado"
+    if identificador in censo_votantes:
+        return "dni_ya_registrado"
     
-    dni_registrados.add(dni)
-    opciones_voto[nom] += 1
-    print(f"voto de {dni} para {nom} ok")
-    return "voto_registrado"
+    censo_votantes.add(identificador)
+    opciones_voto[opcion] += 1
+    print(f"Voto de {identificador} para {opcion} registrado correctamente")
+    return "voto_confirmado"
 
-def atender_peticion(s, addr):
-    global urna_activa
+def gestionar_peticion(conexion, direccion):
+    global urna_abierta
     try:
-        data = s.recv(1024).decode('utf-8').strip()
-        if not data:
-            return
-
-        print(f"peticion de {addr}: {data}")
-        partes = data.split(' ')
-        cmd = partes[0].lower()
-
-        with bloqueo:
-            if cmd == "votar":
-                if not urna_activa:
-                    s.sendall(b"lo_siento_la_urna_esta_cerrada\n")
-                elif len(partes) < 3:
-                    s.sendall(b"faltan_datos_en_el_mensaje\n")
-                else:
-                    res = validar_y_contar(partes[1], partes[2])
-                    s.sendall(f"{res}\n".encode('utf-8'))
-
-            elif cmd == "cerrar":
-                if not urna_activa:
-                    s.sendall(b"la_urna_ya_estaba_cerrada\n")
-                else:
-                    urna_activa = False
-                    ganador = max(opciones_voto, key=opciones_voto.get)
-                    puntos = ",".join([f"{k}:{v}" for k, v in opciones_voto.items()])
-                    print(f"urna cerrada. el ganador es {ganador}")
-                    s.sendall(f"urna_cerrada_ganador_{ganador}_votos_{puntos}\n".encode('utf-8'))
-            else:
-                s.sendall(b"comando_desconocido\n")
+        mensaje = conexion.recv(1024).decode('utf-8').strip()
+        if mensaje:
+            print(f"Peticion de {direccion}: {mensaje}")
+            elementos = mensaje.split()
+            if elementos:
+                orden = elementos[0].upper()
+                with cerrojo:
+                    if orden == "VOTAR" and len(elementos) >= 3:
+                        if urna_abierta:
+                            resultado = registrar_voto_en_censo(elementos[1], elementos[2])
+                            conexion.sendall(f"{resultado}\n".encode('utf-8'))
+                        else:
+                            conexion.sendall(b"urna_cerrada\n")
+                    elif orden == "CERRAR":
+                        if urna_abierta:
+                            urna_abierta = False
+                            total_votos = sum(opciones_voto.values())
+                            recuento = ",".join([f"{k}:{v}" for k, v in opciones_voto.items()])
+                            
+                            if total_votos == 0:
+                                print("La urna se ha cerrado sin votos.")
+                                conexion.sendall(f"exito_cierre_vacio|{recuento}\n".encode('utf-8'))
+                            else:
+                                max_votos = max(opciones_voto.values())
+                                ganadores = [k for k, v in opciones_voto.items() if v == max_votos]
+                                
+                                if len(ganadores) > 1:
+                                    nombres_empate = "&".join(ganadores)
+                                    print(f"La urna se ha cerrado con empate: {nombres_empate}")
+                                    conexion.sendall(f"exito_empate|{nombres_empate}|{recuento}\n".encode('utf-8'))
+                                else:
+                                    ganador = ganadores[0]
+                                    print(f"La urna se ha cerrado. El ganador es {ganador}")
+                                    conexion.sendall(f"exito_cierre|{ganador}|{recuento}\n".encode('utf-8'))
+                        else:
+                            conexion.sendall(b"urna_ya_cerrada_previamente\n")
+                    else:
+                        conexion.sendall(b"comando_invalido\n")
+    except socket.error as e:
+        print(f"Error en la comunicacion con {direccion}: {e}")
     except Exception as e:
-        print(f"error con el cliente {addr}")
+        print(f"Se ha producido un error al procesar la peticion: {e}")
     finally:
-        s.close()
+        conexion.close()
 
-def iniciar():
+def iniciar_servidor():
     serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    serv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    
     try:
         serv.bind(('0.0.0.0', 5000))
-        serv.listen(5)
-        print("esperando en el 5000")
+        serv.listen(10)
+        print("Servidor activo. Esperando en el puerto 5000...")
         
         while True:
-            c, addr = serv.accept()
-            t = threading.Thread(target=atender_peticion, args=(c, addr))
-            t.daemon = True
-            t.start()
+            canal, addr = serv.accept()
+            hilo = threading.Thread(target=gestionar_peticion, args=(canal, addr))
+            hilos_vivos.append(hilo)
+            hilo.start()
     except Exception as e:
-        print("error en el server")
+        print(f"No se ha podido iniciar el servidor correctamente: {e}")
     finally:
         serv.close()
 
-if __name__ == "__main__":
-    iniciar()
+iniciar_servidor()
