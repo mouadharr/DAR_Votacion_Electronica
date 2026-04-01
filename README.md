@@ -1,78 +1,53 @@
-PROTOCOLO DE VOTACIÓN ELECTRÓNICA 
+# Caso 14: Protocolo de Votación Electrónica (Proyecto DAR)
 
-Autores:
+## 1. Visión General del Sistema
+En este proyecto se desarrolla un servicio de red de nivel de aplicación para la gestión de votaciones implementado con una arquitectura Cliente-Servidor. El sistema permite la recepción de varios votos a la vez, valida la identidad del electorado y garantiza un recuento de votos final consistente mediante técnicas de programación concurrente.
 
--Mouad Harrouch Boukhalfa
+## 2. Fundamentos de la Arquitectura
+* **Protocolo de Transporte:** Empleamos **TCP** (puerto 5000), gracias a esto , se proporciona un canal de comunicación orientado a conexión que garantiza que cada voto llegue sin errores y de forma completamente ordenada.
+* **Gestión de la Concurrencia:** El servidor hace uso de la librería `threading` de Python para atender a múltiples terminales de voto a la vez. El acceso a la urna digital se protege mediante un **Mutex (Lock)** para que no se produzcan condiciones de carrera durante la actualización del recuento de votos.
+* **Política de Censo:** Se integra un registro dinámico de votantes en memoria que valida el formato del DNI y bloquea intentos de doble sufragio en tiempo real.
 
--Amjad A Habeeb Mahhi
+## 3. Entorno de Ejecución
+* **Runtime:** Python 3.10 o superior.
+* **Dependencias:** Hacemos uso exclusivamente de la API nativa de red (`socket`, `threading`, `time`), de esta manera se facilita su portabilidad sin instalaciones externas.
+* **Infraestructura:** Optimizado para despliegues LAN sobre máquinas físicas o virtuales. 
 
-En este repositorio tenemos la implementación de un servidor cliente-servidor con  el objetivo de gestionar procesos de votación electrónica . Este sistema garantiza que cada votante pueda votar una única vez y permite el cierre formal con resultados detallados .
+## 4. Guía de Despliegue y Operación
+Para asegurar la integridad de las rutas de archivos, es aconsejable ejecutar los módulos desde el directorio raíz:
 
+### 🔹 Escenario de Simulación (Local)
+1. Iniciar Servidor de Urna: `python codigo/servidor.py`
+2. Iniciar Terminal de Voto: `python codigo/cliente.py`
 
-1. Descripción del Protocolo
+### 🔹 Escenario de Operación en Red
+Configurar la dirección IPv4 de la máquina del servidor en la variable correspondiente del script `cliente.py` para establecer la visibilidad entre hosts.
 
-Este protocolo permite la comunicación entre múltiples clientes y un servidor para emitir votos sobre opciones predefinidas. El servidor controla el censo de votantes para evitar duplicados y gestiona la transición de la urna de estado abierto a cerrado.
+## 5. Primitivas del Protocolo de Aplicación
+Al haber hecho uso de python hemos implementado el código de manera que los mensajes se intercambian en formato ASCII delimitados por un salto de línea (`LF`). 
 
-Características técnicas:
+| Primitiva | Sintaxis del Mensaje | Propósito Funcional | Respuesta del Servidor |
+| :--- | :--- | :--- | :--- |
+| **VOTAR** | `VOTAR <DNI> <CANDIDATO>` | Transmisión de papeleta digital | `voto_confirmado` |
+| **CERRAR** | `CERRAR` | Finalización de jornada y recuento | `exito_cierre\|ganador\|lista` |
+| **STATUS** | (Mecanismo interno) | Notificación de error o duplicidad | `dni_ya_registrado` |
 
--Delimitación de mensajes: Se realiza de forma manual mediante el salto de línea (\n) para separar los datos
+La especificación gramatical formal se encuentra en `docs/protocolo/ABNF.txt`.
 
--Validación: El servidor comprueba la validez de la opción elegida antes de procesar el voto.
-
--Gestión de errores: Se han definido respuestas específicas para casos de DNI repetido, urna que no sigue abierta o comandos mal escritos.
-
-2. Arquitectura y Transporte
-
--Protocolo de transporte: Se usa TCP en el puerto 5000. Se ha elegido este protocolo para facilitar el mantenimiento de la conexión y el correcto envío de los mensajes.
-
--Concurrencia: El servidor es multihilo, para ello usamos la biblioteca threading para gestionar solicitudes simultáneas sin que ocurra un bloqueo cuando dos personajes o más hagan varias 
-solicitudes a la vez.
-
--Exclusión mutua: Hemos implementado bloqueos (Lock) para que solo un hilo pueda modificar el recuento de votos a la vez. Esto evita que si dos cliente votan a la vez sus actualizaciones choquen .
-
-3. Guía de Ejecución
-   
-Configuración
-
-En el archivo cliente.py, se debe cambiar la dirección IP del servidor. En nuestro caso las direcciones IP son :
-
--IP Servidor: 192.168.1.39
-
--IP Cliente: 192.168.1.38
-
-Comandos 
-
-Servidor: Iniciar en la máquina receptora :
-
-python3 servidor.py
-
-Cliente: Iniciar en la máquina emisora :
-
-python3 cliente.py
-
-4. Validación en Red
-
-La comunicación la hemos validado mediante capturas de tráfico real entre dos máquinas virtuales distintas ejecutadas desde el mismo equipo . El archivo de captura se encuentra en la carpeta /docs/captura.pcap.
-
-En wireshark hemos analizado : 
-
-- Handshake TCP: Se observa el establecimiento de la conexión  entre la IP .38 y la IP .39.
-
-- Intercambio de datos: Se identifican los mensajes PSH/ACK correspondientes a los comandos de voto y las confirmaciones que da el  servidor.
-
-- Cierre de conexión: Finalización de la comunicación mediante el intercambio de flags FIN/ACK.
-
-  
-5. Documentación de Diseño Formal
-La especificación completa del protocolo se encuentra en formato en el archivo memoria.pdf dentro de la carpeta /docs. Este documento incluye:
-
--ABNF.
-
--Diagramas de estados.
-
--Diagramas de secuencia.
-
--Gestión de errores .
-
-
-
+## 6. Jerarquía del Repositorio
+Organización del proyecto:
+```text
+ DAR_Votacion_Electronica/
+├──  codigo/              
+│   ├── cliente.py          
+│   └── servidor.py         
+├──  docs/                
+│   ├──  protocolo/
+│   │   ├── ABNF.txt        
+│   │   ├── Diagrama_secuencia.png 
+│   │   ├── diagrama_cliente.png   
+│   │   └── diagrama_servidor.png  
+├── pruebas/          
+│   ├── captura_voto.pcap      
+│   └── datos.png       
+└──  README.md            
