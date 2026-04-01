@@ -38,17 +38,17 @@ La especificación gramatical formal se encuentra en `docs/protocolo/ABNF.txt`.
 Organización del proyecto:
 
 ```text
-📂 DAR_Votacion_Electronica/
-├── 📂 codigo/              # Código fuente (Servicios de red)
-│   ├── cliente.py          # Terminal de voto 
-│   └── servidor.py         # Gestión de multihilo
-├── 📂 docs/                # Documentación
-│   ├── 📂 protocolo/
-│   │   ├── ABNF.txt        # Especificación gramatical formal
-│   │   ├── Diagrama_secuencia.png # Interacción temporal
-│   │   ├── diagrama_cliente.png   # FSM Cliente
-│   │   └── diagrama_servidor.png  # FSM Servidor
-├── 📂 pruebas/             # Evidencias de auditoría en red
-│   ├── captura_voto.pcap      # Captura de tráfico Wireshark
-│   └── flujo_datos.png        # Análisis de PDU (Follow TCP Stream)
-└── 📄 README.md            # Documento técnico principal
+DAR_Votacion_Electronica/
+├──  codigo/              
+│   ├── cliente.py         
+│   └── servidor.py         
+├── docs/                
+│   ├──  protocolo/
+│   │   ├── ABNF.txt       
+│   │   ├── Diagrama_secuencia.png 
+│   │   ├── diagrama_cliente.png   
+│   │   └── diagrama_servidor.png  
+├──  pruebas/             
+│   ├── captura_voto.pcap      
+│   └── flujo_datos.png        
+└──  README.md            
