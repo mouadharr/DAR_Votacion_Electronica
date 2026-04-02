@@ -54,24 +54,24 @@ Delimitación de mensajes: Uso del carácter de salto de línea para evitar prob
 En la carpeta de pruebas se incluyen escenarios representativos para verificar que la lógica del servidor se ha implementado correctamente. Los flujos de datos de estos ejemplos se encuentran en formato de texto:
 
 **Voto Procesado con Éxito (voto_ok.txt)**
-Qué vemos: Un votante con DNI 12345678Z envía un voto para la candidata Andrea Martos.
-Qué hace el código: El servidor bloquea el acceso al fichero mediante un cerrojo (Lock) para evitar escrituras simultáneas, registra el voto y confirma que se ha guardado correctamente.
+¿Qué vemos?: Un votante con DNI 12345678Z envía un voto para la candidata Andrea Martos.
+¿Qué hace el código?: El servidor bloquea el acceso al fichero mediante un cerrojo (Lock) para evitar escrituras simultáneas, registra el voto y confirma que se ha guardado correctamente.
 
 **Intento de Voto Duplicado (error_dni_repetido.txt)**
-Qué vemos: El mismo DNI intenta votar otra vez.
-Qué hace el código: El servidor consulta su lista de control, detecta que el identificador ya existe y rechaza la petición enviando un mensaje de error para asegurar la unicidad del voto.
+¿Qué vemos?: El mismo DNI intenta votar otra vez.
+¿Qué hace el código?: El servidor consulta su lista de control, detecta que el identificador ya existe y rechaza la petición enviando un mensaje de error para asegurar la unicidad del voto.
 
 **Consulta de Resultados (seguimiento_resultados.txt)**
-Qué vemos: El cliente solicita ver el estado actual del recuento.
-Qué hace el código: El servidor suma los votos almacenados y envía el total actualizado al cliente de forma íntegra.
+¿Qué vemos?: El cliente solicita ver el estado actual del recuento.
+¿Qué hace el código?: El servidor suma los votos almacenados y envía el total actualizado al cliente de forma íntegra.
 
 **Urna Cerrada (urna_cerrada.txt)**
-Qué vemos: Un intento de votación (VOTAR 12345678B andrea_martos) cuando el periodo de votación ha ha acabado.
-Qué hace el código: El servidor identifica que el estado de la urna es inactivo y responde con "urna_cerrada", impidiendo la entrada de votos fuera de tiempo.
+¿Qué vemos?: Un intento de votación (VOTAR 12345678B andrea_martos) cuando el periodo de votación ya ha acabado.
+¿Qué hace el código?: El servidor identifica que el estado de la urna es inactivo y responde con "urna_cerrada", impidiendo la entrada de votos fuera de tiempo.
 
 **Situación de Empate (empate.txt)**
-Qué vemos: La petición de cierre (CERRAR) cuando existe una igualdad de votos entre candidatos.
-Qué hace el código: El servidor detecta el empate entre Andrea Martos y Javier García (1 voto cada uno) y genera un mensaje de los ganadores empatados y el desglose final .
+¿Qué vemos?: La petición de cierre (CERRAR) cuando existe una igualdad de votos entre candidatos.
+¿Qué hace el código?: El servidor detecta el empate entre Andrea Martos y Javier García (1 voto cada uno) y genera un mensaje de los ganadores empatados y el desglose final .
 
 ## 7. Jerarquía del Repositorio
 Organización del proyecto:
