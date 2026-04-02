@@ -65,6 +65,14 @@ Qué hace el código: El servidor consulta su lista de control, detecta que el i
 Qué vemos: El cliente solicita ver el estado actual del recuento.
 Qué hace el código: El servidor suma los votos almacenados y envía el total actualizado al cliente de forma íntegra.
 
+**Urna Cerrada (urna_cerrada.txt)**
+Qué vemos: Un intento de votación (VOTAR 12345678B andrea_martos) cuando el periodo de votación ha ha acabado.
+Qué hace el código: El servidor identifica que el estado de la urna es inactivo y responde con "urna_cerrada", impidiendo la entrada de votos fuera de tiempo.
+
+**Situación de Empate (empate.txt)**
+Qué vemos: La petición de cierre (CERRAR) cuando existe una igualdad de votos entre candidatos.
+Qué hace el código: El servidor detecta el empate entre Andrea Martos y Javier García (1 voto cada uno) y genera un mensaje de los ganadores empatados y el desglose final .
+
 ## 7. Jerarquía del Repositorio
 Organización del proyecto:
 
