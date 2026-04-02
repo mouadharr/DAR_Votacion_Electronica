@@ -38,7 +38,34 @@ Al haber hecho uso de python hemos implementado el código de manera que los men
 
 La especificación gramatical formal se encuentra en docs/protocolo/ABNF.txt.
 
-## 6. Jerarquía del Repositorio
+## 6. Validación y Auditoría de Tráfico (Wireshark)
+Con el objetivo de cumplir con los requisitos de validación en red, se ha analizado cómo se comporta el protocolo mediante el análisis de trazas capturadas con Wireshark durante la simulación. Las pruebas se realizaron en una red local entre dos máquinas virtuales con sistema operativo Linux (Cliente: 192.168.1.38 y Servidor: 192.168.1.39).
+
+### Análisis de la Captura (.pcap)
+Se adjunta el archivo captura_voto.pcap en la carpeta de pruebas como evidencia técnica de los siguientes puntos:
+
+Establecimiento de sesión: Handshake TCP completo (SYN, SYN-ACK, ACK) antes del intercambio de datos.
+
+Cumplimiento ABNF: Verificación de que las unidades de datos (PDUs) siguen la sintaxis diseñada para el protocolo.
+
+Delimitación de mensajes: Uso del carácter de salto de línea para evitar problemas de fragmentación en la lectura del socket.
+
+### Ejemplos de Verificación del Protocolo
+En la carpeta de pruebas se incluyen escenarios representativos para verificar que la lógica del servidor se ha implementado correctamente. Los flujos de datos de estos ejemplos se encuentran en formato de texto:
+
+**Voto Procesado con Éxito (voto_ok.txt)**
+Qué vemos: Un votante con DNI 12345678Z envía un voto para la candidata Andrea Martos.
+Qué hace el código: El servidor bloquea el acceso al fichero mediante un cerrojo (Lock) para evitar escrituras simultáneas, registra el voto y confirma que se ha guardado correctamente.
+
+**Intento de Voto Duplicado (error_dni_repetido.txt)**
+Qué vemos: El mismo DNI intenta votar otra vez.
+Qué hace el código: El servidor consulta su lista de control, detecta que el identificador ya existe y rechaza la petición enviando un mensaje de error para asegurar la unicidad del voto.
+
+**Consulta de Resultados (seguimiento_resultados.txt)**
+Qué vemos: El cliente solicita ver el estado actual del recuento.
+Qué hace el código: El servidor suma los votos almacenados y envía el total actualizado al cliente de forma íntegra.
+
+## 7. Jerarquía del Repositorio
 Organización del proyecto:
 
 ```text
@@ -59,39 +86,6 @@ DAR_Votacion_Electronica/
 │   ├── error_dni_repetido.txt
 │   └── seguimiento_resultados.txt        
 └── README.md
-7. Validación y Auditoría de Tráfico (Wireshark)
-Con el objetivo de cumplir con los requisitos de validación en red, se ha analizado cómo se comporta el protocolo mediante el análisis de trazas capturadas con Wireshark durante la simulación. Las pruebas se realizaron en una red local entre dos máquinas virtuales con sistema operativo Linux (Cliente: 192.168.1.38 y Servidor: 192.168.1.39).
-
-Análisis de la Captura (.pcap)
-Se adjunta el archivo captura_voto.pcap en la carpeta /pruebas como evidencia técnica de los siguientes puntos:
-
-Establecimiento de sesión: Handshake TCP completo (SYN, SYN-ACK, ACK) antes del intercambio de datos.
-
-Cumplimiento ABNF: Verificación de que las unidades de datos (PDUs) siguen la sintaxis diseñada para el protocolo.
-
-Delimitación de mensajes: Uso del carácter de salto de línea para evitar problemas de fragmentación en la lectura del socket.
-
-Ejemplos de Verificación del Protocolo
-En la carpeta de pruebas se incluyen escenarios representativos para verificar que la lógica del servidor se ha implementado correctamente. Los flujos de datos de estos ejemplos se encuentran en formato de texto:
-
-Voto Procesado con Éxito (voto_ok.txt):
-
-Qué vemos: Un votante con DNI 12345678Z envía un voto para la candidata Andrea Martos.
-
-Qué hace el código: El servidor bloquea el acceso al fichero mediante un cerrojo (Lock) para evitar escrituras simultáneas, registra el voto y confirma que se ha guardado correctamente.
-
-Intento de Voto Duplicado (error_dni_repetido.txt):
-
-Qué vemos: El mismo DNI intenta votar otra vez.
-
-Qué hace el código: El servidor consulta su lista de control, detecta que el identificador ya existe y rechaza la petición enviando un mensaje de error para asegurar la unicidad del voto.
-
-Consulta de Resultados (seguimiento_resultados.txt):
-
-Qué vemos: El cliente solicita ver el estado actual del recuento.
-
-Qué hace el código: El servidor suma los votos almacenados y envía el total actualizado al cliente de forma íntegra
-
 
 
 
