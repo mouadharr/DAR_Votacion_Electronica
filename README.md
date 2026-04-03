@@ -70,8 +70,3 @@ DAR_Votacion_Electronica/
 │   ├── urna_cerrada.txt        
 │   └── voto_ok.txt
 └── README.md
-
-
-
-
-
