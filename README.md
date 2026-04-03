@@ -16,15 +16,15 @@ El objetivo principal ha sido permitir que varios clientes se conecten a la vez 
 
 * **Protocolo de Transporte (TCP):** Usamos TCP por el puerto **5000** porque al ser una votación no nos podemos permitir perder ningún paquete. TCP nos garantiza que los mensajes lleguen completos, en orden y que la conexión sea fiable.
 * **Concurrencia con Hilos:** El servidor hace uso de la librería `threading` para atender a varios clientes a la vez. Cada cliente nuevo que llega se le asigna un hilo independiente para no bloquear el servicio.
-* **Sincronización (El Cerrojo):** Con el objetivo de evitar "Condiciones de Carrera" (que el recuento falle si dos personas votan a la vez), hemos usado un **`Lock` (Mutex)**. Cuando un hilo va a sumar un voto, bloquea el acceso a las variables globales hasta que termina su operación.
-* **Estructuras de Datos:** * **Censo:** Guardamos los DNIs en un **`set()`** (conjunto), lo que hace que comprobar si alguien ya ha votado sea instantáneo (complejidad $O(1)$).
+* **Sincronización (El Cerrojo):** Con el objetivo de evitar "Condiciones de Carrera" (que el recuento falle si dos personas votan a la vez), hemos usado un **Lock (Mutex)**. Cuando un hilo va a sumar un voto, bloquea el acceso a las variables globales hasta que termina su operación.
+* **Estructuras de Datos:** * **Censo:** Guardamos los DNIs en un **set()** (conjunto), lo que hace que comprobar si alguien ya ha votado sea instantáneo (complejidad O(1)).
     * **Urna:** Las opciones de voto se gestionan en un diccionario para un procesamiento rápido.
 * **Gestión de Errores:** Hemos blindado el código con bloques `try/except/finally`. Si a un cliente se le cae el internet o hay un error inesperado, el servidor no se cuelga; cierra ese socket de forma segura y sigue escuchando al resto.
 
 ---
 
 ## 3. El Protocolo (ABNF) y Estados
-Hemos diseñado un protocolo de aplicación propio con mensajes de texto plano que terminan siempre en salto de línea (`\n`). 
+Hemos diseñado un protocolo de aplicación propio con mensajes de texto plano que terminan siempre en salto de línea (`\n`).
 
 * **VOTAR <DNI> <Candidato>:** El servidor comprueba si el DNI es válido y si no ha votado ya. Responde con confirmaciones o errores como `dni_ya_registrado`.
 * **CERRAR:** Orden exclusiva para finalizar la votación. El servidor pasa al **Estado H** (urna cerrada), bloquea nuevos votos y devuelve el recuento final detallado.
@@ -34,7 +34,7 @@ La especificación formal y los diagramas de comportamiento se encuentran en la 
 ---
 
 ## 4. Validación en Red Real (Wireshark)
-Para comprobar que el protocolo funciona bien en una red real, hemos capturado el tráfico con Wireshark ejecutando el cliente y el servidor en máquinas distintas (IPs `.38` y `.39`). 
+Para comprobar que el protocolo funciona bien en una red real, hemos capturado el tráfico con Wireshark ejecutando el cliente y el servidor en máquinas distintas (IPs `.38` y `.39`).
 
 En la carpeta `pruebas/` se encuentran los **5 archivos PCAP** con los casos de prueba. Para revisar el contenido de los mensajes se debe usar la función **"Seguir secuencia TCP" (Follow TCP Stream)**:
 
