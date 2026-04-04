@@ -15,7 +15,7 @@ candidato_id   = "andrea_martos" / "javier_garcia" / "pedro_gomez"
 recuento_total = item_recuento *( "," item_recuento )
 item_recuento  = candidato_id ":" 1*DIGIT
 
-lista_ganadores = candidato_id *( "&" candidato_id )
+lista_ganadores = candidato_id 1*( "&" candidato_id )
 
 ; Ordenes del cliente
 
@@ -35,7 +35,7 @@ respuesta_voto   = ( "voto_confirmado" /
                      "urna_cerrada" ) LF
 
 respuesta_cerrar = exito_cierre / exito_vacio / exito_empate / 
-                   "urna_ya_cerrada_previamente" LF
+                   ("urna_ya_cerrada_previamente" LF)
 
 exito_cierre     = "exito_cierre" "|" candidato_id "|" recuento_total LF
 exito_vacio      = "exito_cierre_vacio" "|" recuento_total LF
