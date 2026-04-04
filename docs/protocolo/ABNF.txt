@@ -1,44 +1,35 @@
 ; Sintaxis
+SP = %x20
+LF = %x0A
+DIGIT = %x30-39
+letra = %x41-5A / %x61-7A
 
-SP      = %x20
-LF      = %x0A
-DIGIT   = %x30-39
-letra   = %x41-5A / %x61-7A
+; Reglas principales
+mensaje_red = mensaje_cliente / mensaje_servidor
 
-; Reglas principales 
-
-mensaje_red    = mensaje_cliente / mensaje_servidor
-
-identificador  = 8DIGIT letra
-candidato_id   = "andrea_martos" / "javier_garcia" / "pedro_gomez"
+identificador = 8DIGIT letra
+candidato_id = "andrea_martos" / "javier_garcia" / "pedro_gomez"
 
 recuento_total = item_recuento *( "," item_recuento )
-item_recuento  = candidato_id ":" 1*DIGIT
+item_recuento = candidato_id ":" 1*DIGIT
 
 lista_ganadores = candidato_id 1*( "&" candidato_id )
 
 ; Ordenes del cliente
-
 mensaje_cliente = orden_votar / orden_cerrar
 
-orden_votar     = "VOTAR" SP identificador SP candidato_id LF
-orden_cerrar    = "CERRAR" LF
+orden_votar = "VOTAR" SP identificador SP candidato_id LF
+orden_cerrar = "CERRAR" LF
 
 ; Respuestas del servidor
-
 mensaje_servidor = respuesta_voto / respuesta_cerrar / error_generico
 
-respuesta_voto   = ( "voto_confirmado" / 
-                     "dni_ya_registrado" / 
-                     "dni_invalido" / 
-                     "candidato_inexistente" / 
-                     "urna_cerrada" ) LF
+respuesta_voto = ( "voto_confirmado" / "dni_ya_registrado" / "dni_invalido" / "candidato_inexistente" / "urna_cerrada" ) LF
 
-respuesta_cerrar = exito_cierre / exito_vacio / exito_empate / 
-                   ("urna_ya_cerrada_previamente" LF)
+respuesta_cerrar = exito_cierre / exito_vacio / exito_empate / ( "urna_ya_cerrada_previamente" LF )
 
-exito_cierre     = "exito_cierre" "|" candidato_id "|" recuento_total LF
-exito_vacio      = "exito_cierre_vacio" "|" recuento_total LF
-exito_empate     = "exito_empate" "|" lista_ganadores "|" recuento_total LF
+exito_cierre = "exito_cierre" "|" candidato_id "|" recuento_total LF
+exito_vacio = "exito_cierre_vacio" "|" recuento_total LF
+exito_empate = "exito_empate" "|" lista_ganadores "|" recuento_total LF
 
-error_generico   = "comando_invalido" LF
+error_generico = "comando_invalido" LF
