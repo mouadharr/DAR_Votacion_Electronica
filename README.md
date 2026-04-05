@@ -52,27 +52,31 @@ Hemos mantenido un historial de commits progresivo para repartirnos el trabajo d
 ---
 
 ## 6. Instrucciones de Ejecución
-1. Lanzar el servidor: `python Votacion_Electronica/codigo/servidor.py`
-2. Lanzar el cliente: `python Votacion_Electronica/codigo/cliente.py`
+1. Lanzar el servidor: `python codigo/servidor.py`
+2. Lanzar el cliente: `python codigo/cliente.py`
 
 ---
 
 ## 7. Estructura del Proyecto
 
 ```text
-DAR-Proyecto-Votacion-Electronica/
-├── README.md
-└── Votacion_Electronica/
-    ├── codigo/
-    │   ├── cliente.py
-    │   └── servidor.py
-    ├── docs/
-    │   ├── diagramas/
-    │   ├── memoria_diseño/
-    │   └── protocolo/
-    └── pruebas/
-        ├── voto_ok.pcap
-        ├── error_dni_repetido.pcap
-        ├── empate.pcap
-        ├── seguimiento_resultados.pcap
-        └── urna_cerrada.pcap
+DAR_Votacion_Electronica/
+├── codigo/
+│   ├── cliente.py
+│   └── servidor.py
+├── docs/
+│   ├── diagramas/
+│   │   ├── diagrama_cliente.png
+│   │   ├── diagrama_secuencia.png
+│   │   └── diagrama_servidor.png
+│   ├── memoria_diseño/
+│   │   └── memoria_diseño.pdf
+│   └── protocolo/
+│       └── ABNF.txt
+├── pruebas/
+│   ├── empate.pcap
+│   ├── error_dni_repetido.pcap
+│   ├── seguimiento_resultados.pcap
+│   ├── urna_cerrada.pcap
+│   └── voto_ok.pcap
+└── README.md
