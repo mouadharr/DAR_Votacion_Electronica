@@ -40,7 +40,7 @@ public class Cliente {
                     else if (seleccion.equals("c")) candidato = "pedro_gomez";
                     
                     if (!candidato.isEmpty()) {
-                        // Invocación remota (la magia de RMI)
+                        // Invocación remota 
                         String respuesta = votacion.emitirVoto(dni, candidato);
                         
                         if (respuesta.equals("voto_confirmado")) {
