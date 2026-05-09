@@ -5,7 +5,7 @@ public class Servidor {
     public static void main(String[] args) {
         try {
             VotacionRemotaImpl servicioVotacion = new VotacionRemotaImpl();
-            // Registro RMI en el puerto 1099 de toda la vida
+            // Registro RMI en el puerto 1099 
             Registry registry = LocateRegistry.createRegistry(1099); 
             registry.rebind("ServicioVotacion", servicioVotacion);
             
