@@ -57,7 +57,29 @@ Hemos mantenido un historial de commits progresivo para repartirnos el trabajo d
 
 ---
 
-## 7. Estructura del Proyecto
+## 7. Evolución: Práctica 2 - Sistemas de Objetos Distribuidos (RMI)
+
+En esta segunda fase, ubicada en la carpeta `Practica2_RMI/`, el sistema ha evolucionado sustituyendo el paso de mensajes explícito por la invocación de objetos remotos mediante **Java RMI**.
+
+### 7.1 Decisiones Técnicas y Diseño
+* **Abstracción de Red:** Se utiliza la interfaz `VotacionRemota` para que el cliente invoque métodos directamente (`emitirVoto`, `cerrarUrna`), eliminando el parsing manual de texto.
+* **Estado Compartido:** El servidor registra el objeto remoto en el **RMI Registry** (puerto 1099), permitiendo que múltiples clientes operen sobre la misma urna.
+* **Seguridad en Concurrencia:** Uso de `ConcurrentHashMap` y métodos `synchronized` para garantizar la exclusión mutua durante el recuento y evitar condiciones de carrera.
+
+### 7.2 Captura de Tráfico (Análisis Wireshark RMI)
+Se ha validado la ejecución entre dos máquinas virtuales (Servidor: `192.168.1.10` / Cliente: `192.168.1.20`).
+* **JRMI Call:** Invocación del método serializado desde el cliente.
+* **JRMI ReturnData:** Respuesta del servidor con los resultados confirmados.
+
+### 7.3 Instrucciones de Ejecución (Práctica 2 - Java RMI)
+1. Entrar en la carpeta: `cd Practica2_RMI/`
+2. Compilar: `javac *.java`
+3. Lanzar Servidor: `java -Djava.rmi.server.hostname=192.168.1.10 Servidor`
+4. Lanzar Cliente: `java Cliente`
+
+---
+
+## 8. Estructura del Proyecto
 
 ```text
 DAR_Votacion_Electronica/
