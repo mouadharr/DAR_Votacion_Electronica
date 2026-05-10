@@ -83,6 +83,16 @@ Se ha validado la ejecución entre dos máquinas virtuales (Servidor: `192.168.1
 
 ```text
 DAR_Votacion_Electronica/
+├── Java_RMI/
+|   ├── Capturas/
+|   |   └── capturaRMI_P2.pcapng
+|   └── Documentacion_Tecnica/
+|   │   └── MemoriaTecnica_P2.pdf
+│   ├── Cliente.java   
+│   ├── Servidor.java      
+│   ├── VotacionRemota.java
+|   └── VotacionRemotaImpl.java 
+| 
 ├── codigo/
 │   ├── cliente.py
 │   └── servidor.py
@@ -92,7 +102,7 @@ DAR_Votacion_Electronica/
 │   │   ├── diagrama_secuencia.png
 │   │   └── diagrama_servidor.png
 │   ├── memoria_diseño/
-│   │   └── memoria_diseño.pdf
+│   │   └── Memoria_diseño.pdf
 │   └── protocolo/
 │       └── ABNF.txt
 ├── pruebas/
