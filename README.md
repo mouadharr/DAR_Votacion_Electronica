@@ -79,20 +79,43 @@ Se ha validado la ejecución entre dos máquinas virtuales (Servidor: `192.168.1
 
 ---
 
-## 8. Estructura del Proyecto
+## 8. Evolución: Práctica 3 - Arquitectura API REST
+
+En esta tercera y última fase, ubicada en la carpeta `API/`, el sistema ha sido rediseñado para funcionar como un servicio web utilizando la arquitectura REST.
+
+### 8.1 Decisiones Técnicas y Diseño
+* **Arquitectura Stateless (Sin estado):** A diferencia de los sockets o RMI, ahora el servidor no mantiene el estado de la conexión. Cada petición HTTP es independiente.
+* **Intercambio en JSON:** La comunicación cliente-servidor se realiza enviando el cuerpo del mensaje (payload) en formato estandarizado JSON, facilitando la integración.
+* **Documentación Swagger:** Hemos diseñado y documentado los recursos y operaciones (como el método `POST /votos`) generando automáticamente la documentación técnica de la API mediante Swagger.
+
+### 8.2 Captura de Tráfico (Wireshark API REST)
+Para validar el diseño, hemos vuelto a monitorizar la ejecución distribuida entre las máquinas virtuales.
+* En el archivo `trafico_wiresharkp3.pcap` se evidencia la petición del cliente enviando los datos del voto.
+* Se observa la respuesta inmediata del servidor con un código HTTP **201 Created**, confirmando el registro exitoso del voto y demostrando el funcionamiento stateless del protocolo HTTP subyacente.
+
+---
+
+## 9. Estructura del Proyecto
 
 ```text
 DAR_Votacion_Electronica/
+├── API/
+│   ├── Capturas/
+│   │   └── trafico_wiresharkp3.pcap
+│   ├── código/
+│   │   └── main.py
+│   ├── MemoriaTecnica_P3.pdf
+│   └── VotREST_SwaggerUI_AmjadyMo...pdf
 ├── Java_RMI/
-|   ├── Capturas/
-|   |   └── capturaRMI_P2.pcapng
-|   └── Documentacion_Tecnica/
-|   │   └── MemoriaTecnica_P2.pdf
+│   ├── Capturas/
+│   │   └── capturaRMI_P2.pcapng
+│   └── Documentacion_Tecnica/
+│       └── MemoriaTecnica_P2.pdf
 │   ├── Cliente.java   
 │   ├── Servidor.java      
 │   ├── VotacionRemota.java
-|   └── VotacionRemotaImpl.java 
-| 
+│   └── VotacionRemotaImpl.java 
+│ 
 ├── codigo/
 │   ├── cliente.py
 │   └── servidor.py
